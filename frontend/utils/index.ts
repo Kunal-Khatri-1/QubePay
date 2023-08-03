@@ -33,6 +33,9 @@ import {
 
 import { uploadDeliverables } from "./project/uploadDeliverables";
 
+// Lighthouse Imports
+import { progressCallback, uploadTextToIpfs } from "./lighthouse";
+
 export {
   convertSeconds,
   getDoughnutChartConfig,
@@ -43,7 +46,7 @@ export {
   modalLinksVariant,
   textVariant,
   fadeIn,
-  
+
   // firebaseApp,
   app,
   database,
@@ -60,4 +63,8 @@ export {
 
   // firebaseApp,
   uploadDeliverables,
+
+  // Lighthouse
+  progressCallback,
+  uploadTextToIpfs,
 };

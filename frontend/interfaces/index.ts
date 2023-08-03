@@ -20,6 +20,7 @@ import {
   NftAddressDetailsInterface,
   SubmitDeliverablesInterface,
   SumbitFileInterface,
+  FireStoreDataInterface,
 } from "./project";
 
 // projectDetails Imports
@@ -37,6 +38,9 @@ import {
   NotificationContextInterface,
   NotificationConfigurationInterface,
 } from "./notificationContextInterface";
+
+// Lighthouse Imports
+import { ProgressDataInterface } from "./lighthouse";
 
 export type {
   ProjectDataInterface,
@@ -61,4 +65,7 @@ export type {
   DisplayTextDeliverableInterface,
   SubmitDeliverablesInterface,
   SumbitFileInterface,
+  FireStoreDataInterface,
+  // LightHouse
+  ProgressDataInterface,
 };

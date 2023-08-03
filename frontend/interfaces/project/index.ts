@@ -7,6 +7,7 @@ import {
   SubmitDeliverablesInterface,
   SumbitFileInterface,
 } from "./submitDeliverablesInterface";
+import { FireStoreDataInterface } from "./FireStoreDataInterface";
 
 export type {
   CreateProjectFieldInterface,
@@ -16,4 +17,5 @@ export type {
   NftAddressDetailsInterface,
   SubmitDeliverablesInterface,
   SumbitFileInterface,
+  FireStoreDataInterface,
 };

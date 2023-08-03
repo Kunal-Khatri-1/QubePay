@@ -6,6 +6,7 @@ import axios from "axios";
 import {
   CreateProjectFieldInterface,
   CreateProjectFormInterface,
+  FireStoreDataInterface,
   NftAddressDetailsInterface,
   StoreProjectDetailsInterface,
 } from "../../interfaces";
@@ -18,7 +19,7 @@ import { createProjectFields, addressZero } from "../../constants";
 
 // Framer Motion Imports
 import { motion } from "framer-motion";
-import { fadeIn, textVariant } from "../../utils";
+import { fadeIn, textVariant, uploadTextToIpfs } from "../../utils";
 
 // Ethers/Wagmi Imports
 import { useAccount, useSignTypedData } from "wagmi";
@@ -108,9 +109,9 @@ const CreateProjectForm = ({
   setnftAddressDetails,
   setShowProjectModal,
   setProjectDetailLink,
-  // setShowSubmitModal,
-  // projectId,
-}: {
+}: // setShowSubmitModal,
+// projectId,
+{
   form: CreateProjectFormInterface;
   setForm: React.Dispatch<React.SetStateAction<CreateProjectFormInterface>>;
   nftAddressDetails: NftAddressDetailsInterface;
@@ -141,7 +142,7 @@ const CreateProjectForm = ({
   //       console.log("Error has occured with /api/project/[walletAddress].ts");
   //     }
   //   };
-  
+
   //   fetchData();
   // }, []);
 
@@ -175,7 +176,7 @@ const CreateProjectForm = ({
   /**
    * @dev DEMO firebase functions
    */
-  const databaseRef = collection(database, "projects");
+  const databaseRef = collection(database, "project-details");
   const addDataToFirestore = async (form: StoreProjectDetailsInterface) => {
     if (isConnected) {
       try {
@@ -185,7 +186,25 @@ const CreateProjectForm = ({
         form.fileDeliverable = [];
         form.textDeliverable = [];
 
-        const response = await addDoc(databaseRef, form);
+        const stringifiedForm: string = JSON.stringify(
+          form as StoreProjectDetailsInterface
+        );
+        console.log("StringifiedForm: ", stringifiedForm);
+        const projectContentCid = await uploadTextToIpfs(stringifiedForm);
+
+        const dataForFirebase: FireStoreDataInterface = {
+          projectContent: projectContentCid,
+          files: {
+            public: [],
+            encrypted: [],
+          },
+          text: {
+            public: [],
+            encrypted: [],
+          },
+        };
+
+        const response = await addDoc(databaseRef, dataForFirebase);
         const projectDetailLink =
           /**
            * @Todo use https:// for production
@@ -226,7 +245,7 @@ const CreateProjectForm = ({
     }
   };
 
-  const onSubmit = async() => {
+  const onSubmit = async () => {
     console.log("Storing project data...");
 
     const projectData = {
@@ -234,13 +253,13 @@ const CreateProjectForm = ({
       Created: new Date().toISOString(),
       Client: address,
       Status: StatusEnum.WaitingForConnectingLancersWallet,
-    }
+    };
     const id = await axios.post("/api/project", projectData);
 
     console.log(`status: ${id.status}, id: ${id.data["id"]}`);
 
     router.push(`/project/${id.data["id"]}`);
-  }
+  };
 
   return (
     // Form Wrapper
@@ -261,7 +280,6 @@ const CreateProjectForm = ({
           className="xl:text-4xl lg:text-3xl md:text-4xl sm:text-xl text-3xl font-extrabold"
         >
           Create Project
-
           {/* ================================================================== */}
           {/* Comment out because of the merge conflict in PR#131 */}
           {/* {pathname === "/createProject"
@@ -270,7 +288,6 @@ const CreateProjectForm = ({
             ? "Project Detail"
             : null} */}
           {/* ========================================================= */}
-
         </motion.h1>
 
         {/* Form Fields */}
@@ -278,24 +295,23 @@ const CreateProjectForm = ({
           {createProjectFields.map((formField, index) => {
             return (
               formField.title != "Lancer's Wallet Address" && (
-
-            // ==================================================================
-            // Comment out because of the merge conflict in PR#131
-            // if (pathname === "/createProject") {
-            //   return (
-            //     formField.title != "Lancer's Wallet Address" && (
-            //       <FormFields
-            //         formField={formField}
-            //         index={index}
-            //         form={form}
-            //         updateFormField={updateFormField}
-            //         key={index}
-            //       />
-            //     )
-            //   );
-            // } else if (pathname === "/project/[projectId]") {
-            //   return (
-            // ==================================================================
+                // ==================================================================
+                // Comment out because of the merge conflict in PR#131
+                // if (pathname === "/createProject") {
+                //   return (
+                //     formField.title != "Lancer's Wallet Address" && (
+                //       <FormFields
+                //         formField={formField}
+                //         index={index}
+                //         form={form}
+                //         updateFormField={updateFormField}
+                //         key={index}
+                //       />
+                //     )
+                //   );
+                // } else if (pathname === "/project/[projectId]") {
+                //   return (
+                // ==================================================================
 
                 <FormFields
                   formField={formField}
@@ -350,8 +366,8 @@ const CreateProjectForm = ({
             />
           ) : pathname === "/project/[projectId]" ? (
             <div className="w-full flex flex-col gap-6 mt-12 justify-between"> */}
-              {/* Prepay Escrow Button */}
-              {/* <CustomButton
+          {/* Prepay Escrow Button */}
+          {/* <CustomButton
                 text="Prepay Escrow"
                 styles="bg-[#3E8ECC] rounded-md text-center text-lg font-semibold text-white py-[4px] px-7 hover:bg-[#377eb5]"
                 type="submit"
@@ -359,8 +375,8 @@ const CreateProjectForm = ({
                   e.preventDefault();
                 }}
               /> */}
-              {/* Pay Lancer Button */}
-              {/* <CustomButton
+          {/* Pay Lancer Button */}
+          {/* <CustomButton
                 text="Pay Lancer"
                 styles="bg-[#40d1d1] rounded-md text-center text-lg font-semibold text-white py-[4px] px-7 hover:bg-[#31d1d1]"
                 type="submit"
@@ -368,16 +384,16 @@ const CreateProjectForm = ({
                   e.preventDefault();
                 }}
               /> */}
-              {/* Verify and Confirm Button */}
-              {/* <CustomButton
+          {/* Verify and Confirm Button */}
+          {/* <CustomButton
                 text="Confirm"
                 styles="bg-[#d14040] rounded-md text-center text-lg font-semibold text-white py-[4px] px-7 hover:bg-[#d13131]"
                 type="submit"
                 onClick={(e) => signProjectDetail(e)}
               /> */}
 
-              {/* Submit Project Button */}
-              {/* {pathname === "/project/[projectId]" && (
+          {/* Submit Project Button */}
+          {/* {pathname === "/project/[projectId]" && (
                 <CustomButton
                   text="Submit"
                   styles="bg-[#40d1d1] rounded-md text-center text-lg font-semibold text-white py-[4px] px-7 hover:bg-[#31d1d1]"
@@ -391,7 +407,6 @@ const CreateProjectForm = ({
             </div>
           ) : null} */}
           {/* ========================================================= */}
-
         </div>
       </div>
     </motion.div>
