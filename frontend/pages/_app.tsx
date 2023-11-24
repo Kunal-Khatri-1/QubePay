@@ -1,38 +1,54 @@
 import "../styles/globals.css";
-import "@rainbow-me/rainbowkit/styles.css";
 
+// Rainbowkit Imports
+import "@rainbow-me/rainbowkit/styles.css";
 import {
   getDefaultWallets,
   RainbowKitProvider,
   Theme,
   darkTheme,
 } from "@rainbow-me/rainbowkit";
-import { RainbowKitSiweNextAuthProvider } from "@rainbow-me/rainbowkit-siwe-next-auth";
+import { RainbowKitChain } from "@rainbow-me/rainbowkit/dist/components/RainbowKitProvider/RainbowKitChainContext";
+
+// Next-auth Imports
 import { Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import type { AppProps } from "next/app";
-import { configureChains, createClient, useAccount, WagmiConfig } from "wagmi";
+
+// Next Imports
+import { useRouter } from "next/router";
+
+// Wagmi Imports
+import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import {
-  mainnet,
+  // mainnet,
   polygon,
-  optimism,
-  arbitrum,
-  goerli,
-  polygonMumbai,
-  optimismGoerli,
-  arbitrumGoerli,
-  polygonZkEvm,
-  polygonZkEvmTestnet,
+  // optimism,
+  // arbitrum,
+  // goerli,
+  // polygonMumbai,
+  // optimismGoerli,
+  // arbitrumGoerli,
+  // polygonZkEvm,
+  // polygonZkEvmTestnet,
 } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
-import MainLayout from "../layout/mainLayout";
-import { useRouter } from "next/router";
-import { RainbowKitChain } from "@rainbow-me/rainbowkit/dist/components/RainbowKitProvider/RainbowKitChainContext";
+
+// Context Imports
 import { ProjectProvider, NotificationProvider } from "../context";
+
+// Lodash Imports
 import merge from "lodash.merge";
+
+// React Imports
 import { useEffect } from "react";
+
+// Utils Imports
 import { initializeWeb3Provider } from "../utils/ethers";
+
+// Layout Imports
+import MainLayout from "../layout/mainLayout";
 
 // Custom chain for hardhat network on local env with "chainId: 31337"
 const localhost8545 = {
@@ -48,9 +64,10 @@ const localhost8545 = {
     public: { http: ["http://127.0.0.1:8545"] },
     default: { http: ["http://127.0.0.1:8545"] },
   },
-}
+};
 
-const { chains, provider } = configureChains(
+// @ts-ignore
+const { chains, publicClient, webSocketPublicClient } = configureChains(
   [
     // mainnet,
     // goerli,
@@ -70,21 +87,23 @@ const { chains, provider } = configureChains(
    * @dev providing alchemyProvider for development can cause various hinderances like unexpected errors due to limited FREE API calls and separate APIs for each network. Public providers connects to freely available public Ethereum nodes without any API keys.
    */
   [
-    alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY }),
-    // publicProvider(),
+    // alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY }),
+    // @ts-ignore
+    publicProvider(),
   ]
 );
 
 const { connectors } = getDefaultWallets({
-	appName: "My Alchemy DApp",
-	projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
-	chains: chains,
+  appName: "My Alchemy DApp",
+  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
+  chains: chains,
 });
 
-const wagmiClient = createClient({
+const wagmiConfig = createConfig({
   autoConnect: true,
   connectors,
-  provider,
+  publicClient,
+  webSocketPublicClient,
 });
 
 export { WagmiConfig, RainbowKitProvider };
@@ -107,14 +126,17 @@ function MyApp({
   session: Session;
 }>) {
   const router = useRouter();
-  const account = useAccount({
-    onConnect({ address, connector, isReconnected }) {
-      /**
-       * @dev check if this line is required. When wallet is connected, it cause the site to reload
-       */
-      // if (!isReconnected) router.reload();
-    },
-  });
+  /**
+   * @dev cannot use wagmi hooks outside the <WagmiConfig>
+   */
+  // const account = useAccount({
+  //   onConnect({ address, connector, isReconnected }) {
+  //     /**
+  //      * @dev check if this line is required. When wallet is connected, it cause the site to reload
+  //      */
+  //     // if (!isReconnected) router.reload();
+  //   },
+  // });
 
   useEffect(() => {
     // Initialize Web3Provider on application load
@@ -122,7 +144,7 @@ function MyApp({
   }, []);
 
   return (
-    <WagmiConfig client={wagmiClient}>
+    <WagmiConfig config={wagmiConfig}>
       <SessionProvider session={pageProps.session} refetchInterval={0}>
         {/* <RainbowKitSiweNextAuthProvider> */}
         <RainbowKitProvider

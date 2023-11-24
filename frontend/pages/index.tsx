@@ -28,6 +28,7 @@ import { useRouter } from "next/router";
 import { useNotificationContext } from "../context";
 import { IconNotificationWarning } from "../assets";
 import { whitelist } from "../constants/whitelist";
+import { signIn } from "next-auth/react";
 
 const SectionWrapper: React.FC<SectionWrapperPropsInterface> = ({
   children,
@@ -49,7 +50,7 @@ const SectionWrapper: React.FC<SectionWrapperPropsInterface> = ({
 export default function Home() {
   const router = useRouter();
   const { address, isConnected } = useAccount();
-  const { disconnect } = useDisconnect()
+  const { disconnect } = useDisconnect();
 
   // Notification Context
   const context = useNotificationContext();
@@ -60,6 +61,7 @@ export default function Home() {
     // TODO: Fix this whitelist feature
     if (isConnected && whitelist.includes(address)) {
       router.push(`/dashboard/${address}`);
+      signIn("credentials");
     } else if (isConnected && !whitelist.includes(address)) {
       disconnect();
       setNotificationConfiguration({
@@ -106,7 +108,10 @@ export default function Home() {
       </SectionWrapper>
 
       {/* Support & Call To Action */}
-      <SectionWrapper bgColor="bg-bg_primary" glowStyles={aesthetics.glow.walkthroughGlowStyles}>
+      <SectionWrapper
+        bgColor="bg-bg_primary"
+        glowStyles={aesthetics.glow.walkthroughGlowStyles}
+      >
         <Support />
         <div className="bg-gradient-to-r from-green-500 to-blue-500 h-[150px] sm:mt-32 px-5 rounded-lg flex items-center justify-center text-white text-xl gap-x-5">
           <p className="xl:text-4xl lg:text-3xl sm:text-2xl text-xl">
@@ -116,15 +121,16 @@ export default function Home() {
             text="Join Waitlist"
             styles="border-none xl:text-2xl lg:text-xl sm:text-lg font-semibold text-primary bg-white lg:px-8 lg:py-4 px-4 py-2 rounded-md"
             type="button"
-            onClick={(e) => 
-              window.open(waitlistUrl, "_blank")
-            }
+            onClick={(e) => window.open(waitlistUrl, "_blank")}
           />
         </div>
       </SectionWrapper>
 
       {/* FAQ */}
-      <SectionWrapper bgColor="bg-black" glowStyles={aesthetics.glow.featuresGlowStyles}>
+      <SectionWrapper
+        bgColor="bg-black"
+        glowStyles={aesthetics.glow.featuresGlowStyles}
+      >
         <FAQ />
       </SectionWrapper>
 

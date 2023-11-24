@@ -25,4 +25,7 @@ export const whitelist: string[] = [
   "0xeFdc55a9784E58f12d9d87A4a6A7A9575d390f09", //beatricepaul362@gmail.com
   "0xd1fA3f9BA62cb251e785D2c7Eddd5D0A022BAaE1", //unknown
   "0x39D2ce39Ff405Ac063aE999a0B79E997ED98f396", //unknown
+  // -----------------------------------------------------------------------------------------
+  // Dev Testing
+  "0x5E4EE2aA55C20cae19eb8592aC8216264F9813dE",
 ];
