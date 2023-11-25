@@ -36,6 +36,9 @@ import { uploadDeliverables } from "./project/uploadDeliverables";
 import { convertState } from "./convertState";
 import { activeUserByStatus } from "./activeUserByStatus";
 
+// Siwe Imports
+import { siwe } from "./siwe";
+
 export {
   convertSeconds,
   getDoughnutChartConfig,
@@ -46,7 +49,7 @@ export {
   modalLinksVariant,
   textVariant,
   fadeIn,
-  
+
   // firebaseApp,
   firebaseApp,
   database,
@@ -63,7 +66,9 @@ export {
 
   // firebaseApp,
   uploadDeliverables,
-
   convertState,
   activeUserByStatus,
+
+  // siwe Imports
+  siwe,
 };
