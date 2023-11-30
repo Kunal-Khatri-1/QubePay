@@ -8,12 +8,20 @@ import * as admin from "firebase-admin";
 const serviceAccount = JSON.parse(process.env.FIRESTORE_SERVICE_ACCOUNT);
 serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, "\n");
 
-const firebaseAdminApp = admin.initializeApp(
-  {
-    credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
-  },
-  "next-firebase-admin"
-);
+let firebaseAdminApp: admin.app.App;
+if (
+  admin.apps.length === 0 ||
+  !admin.apps.some((app) => app.name === "next-firebase-admin")
+) {
+  firebaseAdminApp = admin.initializeApp(
+    {
+      credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
+    },
+    "next-firebase-admin"
+  );
+} else {
+  firebaseAdminApp = admin.app("next-firebase-admin");
+}
 const db = admin.firestore(firebaseAdminApp);
 
 export { db };

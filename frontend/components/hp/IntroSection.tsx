@@ -9,7 +9,7 @@ import { siwe, textVariant } from "../../utils";
 
 // Waitlist URL Import
 import { waitlistUrl } from "../../constants";
-import { useAccount, useFeeData, useSignMessage } from "wagmi";
+import { useAccount, useFeeData, useSignMessage, useDisconnect } from "wagmi";
 import { signOut, useSession } from "next-auth/react";
 
 const IntroHeaderSection = (): JSX.Element => (
@@ -27,6 +27,7 @@ const IntroHeaderSection = (): JSX.Element => (
 const IntroFooterSection = (): JSX.Element => {
   const { address } = useAccount();
   const { signMessageAsync } = useSignMessage();
+  const { disconnect } = useDisconnect();
   const { data: session } = useSession();
 
   useEffect(() => {
@@ -52,18 +53,7 @@ const IntroFooterSection = (): JSX.Element => {
         type="button"
         onClick={(e) => window.open(waitlistUrl, "_blank")}
       />
-      <CustomButton
-        text="signIn"
-        styles="border-none xs:text-lg sm:text-xl lg:text-xl xl:text-2xl sm:text-sm text-xl font-semibold text-primary bg-white lg:px-8 lg:py-4 px-4 py-2 rounded-md lg:mt-12 sm:mt-8 mt-16"
-        type="button"
-        onClick={(e) => {
-          e.preventDefault();
-          // window.open(waitlistUrl, "_blank")
-          console.log("clicked");
-          const siweArgs = { address, signMessageAsync };
-          siwe(siweArgs);
-        }}
-      />
+
       <CustomButton
         text="signOut"
         styles="border-none xs:text-lg sm:text-xl lg:text-xl xl:text-2xl sm:text-sm text-xl font-semibold text-primary bg-white lg:px-8 lg:py-4 px-4 py-2 rounded-md lg:mt-12 sm:mt-8 mt-16"
@@ -75,6 +65,7 @@ const IntroFooterSection = (): JSX.Element => {
           // const siweArgs = { address, signMessageAsync };
           // siwe(siweArgs);
           signOut();
+          disconnect();
         }}
       />
     </div>

@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
-import { NextPage } from "next";
+import { GetServerSidePropsContext, NextPage } from "next";
 import { useRouter } from "next/router";
 import axios from "axios";
+
+// Next-Auth Imports
+import { getNextAuthOptions } from "../api/auth/[...nextauth]";
 
 // Custom Components Imports
 import {
@@ -13,11 +16,7 @@ import {
 } from "../../components";
 
 // Constants Imports
-import { 
-  mockData,
-  aesthetics,
-  chartColors
-} from "../../constants";
+import { mockData, aesthetics, chartColors } from "../../constants";
 
 // Interfaces Imports
 import {
@@ -28,15 +27,17 @@ import {
 
 // Framer-Motion Imports
 import { motion } from "framer-motion";
-import { 
-  fadeIn,
-  textVariant
-} from "../../utils";
+import { fadeIn, textVariant } from "../../utils";
 
 // StatusEnum Import
 import { StatusEnum } from "../../enums";
 
+// Wagmi Imports
 import { useAccount } from "wagmi";
+
+// Next-Auth Imports
+import { useSession } from "next-auth/react";
+import { getServerSession } from "next-auth";
 
 const SectionWrapper: React.FC<SectionWrapperPropsInterface> = ({
   children,
@@ -55,8 +56,22 @@ const SectionWrapper: React.FC<SectionWrapperPropsInterface> = ({
   );
 };
 
-const Dashboard: NextPage = () => {
+const Dashboard: NextPage = (props) => {
+  console.log(props);
+
   const router = useRouter();
+
+  const { data: session, status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      router.push("/");
+    },
+  });
+
+  if (status === "loading") {
+    return <p>Loading...</p>;
+  }
+
   const { address, isDisconnected } = useAccount();
   const [data, setData] = useState({} as ProjectDataInterface);
 
@@ -69,8 +84,10 @@ const Dashboard: NextPage = () => {
           projects.push({
             project: project["Title"],
             deadline: project["Deadline(UTC)"],
-            amount: parseInt(project["Reward(USDC)"]),  // string -> number
-            status: Object.entries(StatusEnum).find(([key, value]) => value == project["Status"])[1] as StatusEnum,
+            amount: parseInt(project["Reward(USDC)"]), // string -> number
+            status: Object.entries(StatusEnum).find(
+              ([key, value]) => value == project["Status"]
+            )[1] as StatusEnum,
             id: project["id"],
           });
         });
@@ -80,9 +97,9 @@ const Dashboard: NextPage = () => {
         console.log("Error has occured with /api/project/[walletAddress].ts");
       }
     };
-  
+
     fetchData();
-  }, []);
+  }, [session]);
 
   useEffect(() => {
     if (isDisconnected) {
@@ -139,11 +156,11 @@ const Dashboard: NextPage = () => {
             viewport={{ once: true, amount: 0.25 }}
             className="lg:col-start-2 lg:col-end-12 col-start-1 col-end-13 my-8 bg-black rounded-lg xs:grid grid-rows-10 lg:p-[3px] p-[2px] blue-transparent-green-gradient-vertical"
           >
-            {
-              data.data?.length > 0 
-                ? <Table projectData={data} />
-                : <p className="m-5 text-center text-3xl">No Project Yet</p>
-            }
+            {data.data?.length > 0 ? (
+              <Table projectData={data} />
+            ) : (
+              <p className="m-5 text-center text-3xl">No Project Yet</p>
+            )}
           </motion.div>
         </div>
       </SectionWrapper>

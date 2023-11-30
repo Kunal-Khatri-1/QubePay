@@ -19,6 +19,8 @@ import NftGateway from "./NFT-Gated.svg";
 import Gasless from "./Gasless.svg";
 import MediumIcon from "./Medium-Icon.svg";
 import Discord from "./Discord.svg";
+import IconSiwe from "./Icon-Siwe.svg";
+import GifLoader from "./Gif-Loader.gif";
 
 export {
   arrow,
@@ -42,4 +44,6 @@ export {
   Gasless,
   MediumIcon,
   Discord,
+  IconSiwe,
+  GifLoader,
 };
