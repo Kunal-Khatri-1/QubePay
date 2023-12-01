@@ -35,7 +35,7 @@ export default async (req: any, res: any) => {
         res.status(200).json(projects);
       }
     } catch (e) {
-      res.status(400).end();
+      res.status(400).send(e.message).end();
     }
   } else {
     res.status(401);

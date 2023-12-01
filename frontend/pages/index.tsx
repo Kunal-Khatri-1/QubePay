@@ -32,6 +32,7 @@ import { signIn, useSession } from "next-auth/react";
 
 // Utils Imports
 import { siwe } from "../utils";
+import SiweSignInPopup from "../components/hp/SiweSignInPopup";
 
 const SectionWrapper: React.FC<SectionWrapperPropsInterface> = ({
   children,
@@ -60,67 +61,70 @@ export default function Home() {
   const setNotificationConfiguration = context.setNotificationConfiguration;
 
   return (
-    <div className="font-nunito text-secondary">
-      {/* Notification */}
-      <Notification />
-      {/* IntroSection */}
-      <SectionWrapper
-        bgColor="bg-bg_primary"
-        glowStyles={aesthetics.glow.introSectionGlowStyles}
-      >
-        <IntroSection />
-      </SectionWrapper>
+    <>
+      <SiweSignInPopup />
+      <div className="font-nunito text-secondary">
+        {/* Notification */}
+        <Notification />
+        {/* IntroSection */}
+        <SectionWrapper
+          bgColor="bg-bg_primary"
+          glowStyles={aesthetics.glow.introSectionGlowStyles}
+        >
+          <IntroSection />
+        </SectionWrapper>
 
-      {/* Why use Qube? */}
-      <SectionWrapper bgColor="bg-black" glowStyles={[]}>
-        <CurrentSystemProblems />
-      </SectionWrapper>
+        {/* Why use Qube? */}
+        <SectionWrapper bgColor="bg-black" glowStyles={[]}>
+          <CurrentSystemProblems />
+        </SectionWrapper>
 
-      {/* Features */}
-      <SectionWrapper
-        bgColor="bg-black"
-        glowStyles={aesthetics.glow.featuresGlowStyles}
-      >
-        <Features />
-      </SectionWrapper>
+        {/* Features */}
+        <SectionWrapper
+          bgColor="bg-black"
+          glowStyles={aesthetics.glow.featuresGlowStyles}
+        >
+          <Features />
+        </SectionWrapper>
 
-      {/* How to Use */}
-      <SectionWrapper
-        bgColor="bg-bg_primary"
-        glowStyles={aesthetics.glow.walkthroughGlowStyles}
-      >
-        <Walkthrough />
-      </SectionWrapper>
+        {/* How to Use */}
+        <SectionWrapper
+          bgColor="bg-bg_primary"
+          glowStyles={aesthetics.glow.walkthroughGlowStyles}
+        >
+          <Walkthrough />
+        </SectionWrapper>
 
-      {/* Support & Call To Action */}
-      <SectionWrapper
-        bgColor="bg-bg_primary"
-        glowStyles={aesthetics.glow.walkthroughGlowStyles}
-      >
-        <Support />
-        <div className="bg-gradient-to-r from-green-500 to-blue-500 h-[150px] sm:mt-32 px-5 rounded-lg flex items-center justify-center text-white text-xl gap-x-5">
-          <p className="xl:text-4xl lg:text-3xl sm:text-2xl text-xl">
-            Come and join our waitlist for the best collaboration!
-          </p>
-          <CustomButton
-            text="Join Waitlist"
-            styles="border-none xl:text-2xl lg:text-xl sm:text-lg font-semibold text-primary bg-white lg:px-8 lg:py-4 px-4 py-2 rounded-md"
-            type="button"
-            onClick={(e) => window.open(waitlistUrl, "_blank")}
-          />
-        </div>
-      </SectionWrapper>
+        {/* Support & Call To Action */}
+        <SectionWrapper
+          bgColor="bg-bg_primary"
+          glowStyles={aesthetics.glow.walkthroughGlowStyles}
+        >
+          <Support />
+          <div className="bg-gradient-to-r from-green-500 to-blue-500 h-[150px] sm:mt-32 px-5 rounded-lg flex items-center justify-center text-white text-xl gap-x-5">
+            <p className="xl:text-4xl lg:text-3xl sm:text-2xl text-xl">
+              Come and join our waitlist for the best collaboration!
+            </p>
+            <CustomButton
+              text="Join Waitlist"
+              styles="border-none xl:text-2xl lg:text-xl sm:text-lg font-semibold text-primary bg-white lg:px-8 lg:py-4 px-4 py-2 rounded-md"
+              type="button"
+              onClick={(e) => window.open(waitlistUrl, "_blank")}
+            />
+          </div>
+        </SectionWrapper>
 
-      {/* FAQ */}
-      <SectionWrapper
-        bgColor="bg-black"
-        glowStyles={aesthetics.glow.featuresGlowStyles}
-      >
-        <FAQ />
-      </SectionWrapper>
+        {/* FAQ */}
+        <SectionWrapper
+          bgColor="bg-black"
+          glowStyles={aesthetics.glow.featuresGlowStyles}
+        >
+          <FAQ />
+        </SectionWrapper>
 
-      {/* Footer */}
-      <Footer />
-    </div>
+        {/* Footer */}
+        <Footer />
+      </div>
+    </>
   );
 }

@@ -56,9 +56,7 @@ const SectionWrapper: React.FC<SectionWrapperPropsInterface> = ({
   );
 };
 
-const Dashboard: NextPage = (props) => {
-  console.log(props);
-
+const Dashboard: NextPage = () => {
   const router = useRouter();
 
   const { data: session, status } = useSession({
@@ -68,14 +66,11 @@ const Dashboard: NextPage = (props) => {
     },
   });
 
-  if (status === "loading") {
-    return <p>Loading...</p>;
-  }
-
   const { address, isDisconnected } = useAccount();
   const [data, setData] = useState({} as ProjectDataInterface);
 
   useEffect(() => {
+    console.log("useEffect 1 called");
     const fetchData = async () => {
       try {
         const res = await axios.get(`/api/project/${address}`);
@@ -102,10 +97,15 @@ const Dashboard: NextPage = (props) => {
   }, [session]);
 
   useEffect(() => {
+    console.log("useEffect 2 called");
     if (isDisconnected) {
       router.push("/");
     }
   }, [isDisconnected]);
+
+  if (status === "loading") {
+    return <p>Loading...</p>;
+  }
 
   if (!data) {
     return null;

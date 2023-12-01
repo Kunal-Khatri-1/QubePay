@@ -18,16 +18,12 @@ import { useNotificationContext } from "../../context";
 // import { redirect } from "next/navigation";
 
 const SiweSignInPopup = () => {
-  const { address, isConnected } = useAccount({
-    onDisconnect() {
-      signOut();
-    },
-  });
+  const { address, isConnected } = useAccount();
   const { signMessageAsync } = useSignMessage();
   const { disconnect } = useDisconnect();
   const router = useRouter();
   // const {connect} = useConnect()
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [authStatusText, setAuthStatusText] = useState("");
   const [showModal, setShowModal] = useState(false);
 
@@ -38,8 +34,13 @@ const SiweSignInPopup = () => {
 
   useEffect(() => {
     // TODO: Fix this whitelist feature
-    if (isConnected && whitelist.includes(address) && !session) {
+    if (
+      isConnected &&
+      whitelist.includes(address) &&
+      status === "unauthenticated"
+    ) {
       (async () => {
+        console.log("This should not have been called");
         setShowModal(true);
         const siweArgs = { address, signMessageAsync, setAuthStatusText };
         const signInStatus = await siwe(siweArgs);
@@ -68,7 +69,7 @@ const SiweSignInPopup = () => {
       });
       setShowNotification(true);
     }
-  }, [isConnected]);
+  }, [isConnected, session]);
 
   return (
     <AnimatePresence>
