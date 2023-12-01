@@ -6,8 +6,9 @@ import { getCsrfToken } from "next-auth/react";
 import { SiweMessage } from "siwe";
 // import * as admin from "firebase-admin";
 import * as ethers from "ethers";
-import { db } from "../../../utils/api/firebase";
+import { db } from "../../../utils/api/";
 import { NextApiRequest, NextApiResponse } from "next";
+import { UsersCollectionInterface } from "../../../interfaces/api/";
 
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
@@ -63,29 +64,46 @@ export const getNextAuthOptions = (req: NextApiRequest) => {
             if (userSnapshot.exists) {
               console.log("user snapshot exists");
               // console.log("user exists");
-              const userData = userSnapshot.data();
+              const userData = userSnapshot.data() as UsersCollectionInterface;
               console.log("userData: ", userData);
 
               return {
-                name: "Kunal",
-                randomKey: "random",
-                id: siwe.address,
-              };
+                uid: uid,
+                address: parsedCredentials.address,
+                displayName: userData.displayName,
+                profilePictureUrl: userData.profilePictureUrl,
+                email: userData.socials.email,
+              } as unknown as any;
             } else {
               console.log("adding new signer to firestore");
-              await userRef.set({
-                name: "Sagar",
-                randomKey: "random",
-                id: siwe.address,
-              });
+
+              const newUserData: UsersCollectionInterface = {
+                walletAddress: parsedCredentials.address,
+                displayName: "",
+                displayTitle: "",
+                description: "",
+                profileBannerUrl: "",
+                profilePictureUrl: "",
+                nonceArray: [],
+                lastRequestTimestamp: 0,
+                socials: {
+                  github: "",
+                  linkedIn: "",
+                  twitter: "",
+                  email: "",
+                },
+              };
+
+              await userRef.set(newUserData);
 
               console.log("added user to firestore");
 
               return {
-                name: "Sagar",
-                randomKey: "random",
-                id: siwe.address,
-              };
+                uid: uid,
+                displayName: "",
+                profilePictureUrl: "",
+                email: "",
+              } as unknown as any;
             }
           }
 
@@ -98,11 +116,6 @@ export const getNextAuthOptions = (req: NextApiRequest) => {
     }),
   ];
 
-  // // Hide Sign-In with Ethereum from default sign page
-  // if (isDefaultSigninPage) {
-  //   providers.pop();
-  // }
-
   const nextAuthOptions: NextAuthOptions = {
     providers,
     session: {
@@ -111,9 +124,20 @@ export const getNextAuthOptions = (req: NextApiRequest) => {
     secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
       session: ({ session, token }: { session: any; token: any }) => {
+        console.log("Session: ", { session, token });
+
+        const { uid, address, displayName, profilePictureUrl, email } = token;
+
         return {
           ...session,
-          user: { ...session.user, id: token.id, randomKey: token.randomKey },
+          user: {
+            ...session.user,
+            address: address,
+            id: uid,
+            name: displayName,
+            image: profilePictureUrl,
+            email: email,
+          },
         };
       },
       /**
@@ -121,16 +145,23 @@ export const getNextAuthOptions = (req: NextApiRequest) => {
        * @param user => is passed only the first time the user logs in therefore not going to be present other times.
        */
       jwt: ({ token, user }) => {
-        // console.log("JWT callback", { token, user });
+        console.log("JWT callback", { token, user });
 
         // called when the user just logs in
         if (user) {
-          const u = user as unknown as any;
-          return {
+          const { uid, displayName, profilePictureUrl, email, address } =
+            user as unknown as any;
+
+          const jwtToken = {
             ...token,
-            id: u.id,
-            randomKey: u.randomKey,
+            address,
+            uid,
+            displayName,
+            profilePictureUrl,
+            email,
           };
+
+          return jwtToken;
         }
 
         return token;

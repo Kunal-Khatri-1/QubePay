@@ -17,6 +17,38 @@ import { useRouter } from "next/router";
 import { useNotificationContext } from "../../context";
 // import { redirect } from "next/navigation";
 
+const SignInPopup = ({ authStatusText }: { authStatusText: string }) => {
+  return (
+    <div className="px-4 py-16 flex flex-col gap-8 items-center justify-center">
+      {/* Siwe Logo */}
+      <Image
+        src={IconSiwe}
+        alt="Icon_siwe"
+        width={100}
+        height={100}
+        className=" w-24 h-24 mx-auto"
+      />
+      {/* Main */}
+      <div className="flex flex-col gap-4 justify-center items-center">
+        <h2 className=" text-2xl font-bold">Signing in with Wallet</h2>
+        {/* Auth status Wrapper */}
+        <div className="flex flex-row gap-2 items-center">
+          <Image
+            src={GifLoader}
+            alt="Loading..."
+            width={20}
+            height={20}
+            className=" w-5 h-5"
+          />
+          {/* Auth status */}
+          <p className=" text-base text-gray-300">{authStatusText}</p>
+        </div>
+        <p></p>
+      </div>
+    </div>
+  );
+};
+
 const SiweSignInPopup = () => {
   const { address, isConnected } = useAccount();
   const { signMessageAsync } = useSignMessage();
@@ -88,37 +120,7 @@ const SiweSignInPopup = () => {
             <div className="w-full blue-transparent-green-gradient rounded-xl p-[2px] flex flex-row items-center shadow-lg">
               <div className="w-full bg-bg_primary rounded-xl px-8 relative">
                 <Glow styles={aesthetics.glow.mobileNavbarGlowStyles} />
-                <div className="px-4 py-16 flex flex-col gap-8 items-center justify-center">
-                  {/* Siwe Logo */}
-                  <Image
-                    src={IconSiwe}
-                    alt="Icon_siwe"
-                    width={100}
-                    height={100}
-                    className=" w-24 h-24 mx-auto"
-                  />
-                  {/* Main */}
-                  <div className="flex flex-col gap-4 justify-center items-center">
-                    <h2 className=" text-2xl font-bold">
-                      Signing in with Wallet
-                    </h2>
-                    {/* Auth status Wrapper */}
-                    <div className="flex flex-row gap-2 items-center">
-                      <Image
-                        src={GifLoader}
-                        alt="Loading..."
-                        width={20}
-                        height={20}
-                        className=" w-5 h-5"
-                      />
-                      {/* Auth status */}
-                      <p className=" text-base text-gray-300">
-                        {authStatusText}
-                      </p>
-                    </div>
-                    <p></p>
-                  </div>
-                </div>
+                <SignInPopup authStatusText={authStatusText} />
               </div>
             </div>
           </div>
