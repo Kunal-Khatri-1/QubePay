@@ -21,6 +21,7 @@ import MediumIcon from "./Medium-Icon.svg";
 import Discord from "./Discord.svg";
 import IconSiwe from "./Icon-Siwe.svg";
 import GifLoader from "./Gif-Loader.gif";
+import IconVertGradBlueGreen from "./Icon-Email-Vertical-Gradient-Blue-Green.svg";
 
 export {
   arrow,
@@ -46,4 +47,5 @@ export {
   Discord,
   IconSiwe,
   GifLoader,
+  IconVertGradBlueGreen,
 };

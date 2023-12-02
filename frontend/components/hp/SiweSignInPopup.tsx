@@ -2,13 +2,14 @@ import { AnimatePresence, motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import { modalVariant, siwe } from "../../utils";
 import { aesthetics } from "../../constants";
-import { Glow } from "..";
+import { CustomButton, Glow } from "..";
 import Image from "next/image";
 import {
   GifLoader,
   IconNotificationError,
   IconNotificationWarning,
   IconSiwe,
+  IconVertGradBlueGreen,
 } from "../../assets";
 import { useAccount, useConnect, useDisconnect, useSignMessage } from "wagmi";
 import { whitelist } from "../../constants/whitelist";
@@ -17,7 +18,7 @@ import { useRouter } from "next/router";
 import { useNotificationContext } from "../../context";
 // import { redirect } from "next/navigation";
 
-const SignInPopup = ({ authStatusText }: { authStatusText: string }) => {
+const SignInSection = ({ authStatusText }: { authStatusText: string }) => {
   return (
     <div className="px-4 py-16 flex flex-col gap-8 items-center justify-center">
       {/* Siwe Logo */}
@@ -42,6 +43,57 @@ const SignInPopup = ({ authStatusText }: { authStatusText: string }) => {
           />
           {/* Auth status */}
           <p className=" text-base text-gray-300">{authStatusText}</p>
+        </div>
+        <p></p>
+      </div>
+    </div>
+  );
+};
+
+const EmailSection = () => {
+  return (
+    <div className="px-4 py-16 flex flex-col gap-8 items-center justify-center">
+      {/* Email Logo */}
+      <Image
+        src={IconVertGradBlueGreen}
+        alt="Icon_siwe"
+        width={80}
+        height={80}
+        className=" w-20 h-20 mx-auto"
+      />
+      {/* Main */}
+      <div className="flex flex-col gap-4 justify-center items-center">
+        <h2 className=" text-2xl font-bold">Verify Email</h2>
+        {/* Email Wrapper */}
+        <div className="flex flex-col w-full gap-4 items-center">
+          {/* <Image
+            src={GifLoader}
+            alt="Loading..."
+            width={20}
+            height={20}
+            className=" w-5 h-5"
+          /> */}
+          {/* Email/OTP Wrapper */}
+          <div className="flex flex-row w-full">
+            <input
+              className=" rounded-l-md border-none bg-[#0b1334] focus:bg-[#0b1334] px-4 py-[0.3rem] text-sm outline-none text-[#D3D3D3] basis-4/6"
+              placeholder="example@email.com"
+              type="email"
+              name="register_email"
+              id="register_email"
+            />
+            <CustomButton
+              text="Get OTP"
+              styles="border-none font-semibold px-4 py-2 bg-primary rounded-e-md basis-2/6"
+              type="button"
+              onClick={(e) => {}}
+            />
+          </div>
+          {/* Email status */}
+          <p className=" text-sm text-gray-300">
+            The OTP will be sent to your email for verification - One time step
+            for verification
+          </p>
         </div>
         <p></p>
       </div>
@@ -76,10 +128,9 @@ const SiweSignInPopup = () => {
         setShowModal(true);
         const siweArgs = { address, signMessageAsync, setAuthStatusText };
         const signInStatus = await siwe(siweArgs);
-        if (signInStatus) {
-          router.push(`/dashboard/${address}`);
+        if (!signInStatus) {
+          // router.push(`/dashboard/${address}`);
           // redirect(`dashboard/${address}`);
-        } else {
           disconnect();
           setNotificationConfiguration({
             modalColor: "#d14040",
@@ -89,7 +140,9 @@ const SiweSignInPopup = () => {
           });
           setShowNotification(true);
         }
-        setShowModal(false);
+        // else {
+        // }
+        // setShowModal(false);
       })();
     } else if (isConnected && !whitelist.includes(address)) {
       disconnect();
@@ -101,7 +154,18 @@ const SiweSignInPopup = () => {
       });
       setShowNotification(true);
     }
-  }, [isConnected, session]);
+  }, [
+    isConnected,
+    //  session
+  ]);
+
+  useEffect(() => {
+    if (status === "authenticated" && session.user.email) {
+      console.log("email is empty");
+      setShowModal(false);
+      router.push(`/dashboard/${address}`);
+    }
+  }, [session]);
 
   return (
     <AnimatePresence>
@@ -120,7 +184,11 @@ const SiweSignInPopup = () => {
             <div className="w-full blue-transparent-green-gradient rounded-xl p-[2px] flex flex-row items-center shadow-lg">
               <div className="w-full bg-bg_primary rounded-xl px-8 relative">
                 <Glow styles={aesthetics.glow.mobileNavbarGlowStyles} />
-                <SignInPopup authStatusText={authStatusText} />
+                {status === "authenticated" && session.user.email === "" ? (
+                  <EmailSection />
+                ) : (
+                  <SignInSection authStatusText={authStatusText} />
+                )}
               </div>
             </div>
           </div>
